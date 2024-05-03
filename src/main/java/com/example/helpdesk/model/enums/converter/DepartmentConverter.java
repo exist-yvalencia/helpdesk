@@ -1,9 +1,11 @@
-package com.example.helpdesk.model.enums;
+package com.example.helpdesk.model.enums.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 import java.util.stream.Stream;
+
+import com.example.helpdesk.model.enums.Department;
 
 @Converter(autoApply = true)
 public class DepartmentConverter implements AttributeConverter<Department, String> {

@@ -15,18 +15,4 @@ public enum Status {
     public String getValue() {
         return this.status;
     }
-    // public String toString() {
-    //     switch(this) {
-    //         case NEW:
-    //             return "NEW";
-    //         case ASSIGNED:
-    //             return "ASSIGNED";
-    //         case INPROGRESS:
-    //             return "INPROGRESS";
-    //         case CLOSED:
-    //             return "ClOSED";
-    //         default:
-    //             return null;
-    //     }
-    // }
 }

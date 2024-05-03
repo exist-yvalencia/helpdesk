@@ -7,6 +7,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -15,8 +16,10 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableWebSecurity
 @EnableMethodSecurity(
-    prePostEnabled=true
+    prePostEnabled=true,
+    proxyTargetClass = true
 )
 public class SecurityConfiguration {
     @Autowired
@@ -31,7 +34,7 @@ public class SecurityConfiguration {
 
         UserDetails admin = User.withUsername(env.getProperty("spring.security.admin.name"))
             .password(passwordEncoder.encode(env.getProperty("spring.security.admin.password")))
-            .roles("USER", "ADMIN")
+            .roles("ADMIN")
             .build();
 
         return new InMemoryUserDetailsManager(user, admin);
@@ -39,8 +42,9 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.authorizeHttpRequests(request -> request.anyRequest()
-                .authenticated())
+        return http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(request -> request.anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults())
             .build();
     }

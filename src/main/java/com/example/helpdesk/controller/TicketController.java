@@ -26,13 +26,13 @@ public class TicketController {
     } 
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<Ticket> getTicket(@RequestParam String id) {
         return ticketService.getTicket(id);
     }
 
     @GetMapping("/all")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<Ticket>> getTicketList() {
         return ticketService.getTicketList();
     }

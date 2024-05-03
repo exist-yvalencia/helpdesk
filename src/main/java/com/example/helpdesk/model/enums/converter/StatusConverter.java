@@ -1,14 +1,16 @@
-package com.example.helpdesk.model.enums;
+package com.example.helpdesk.model.enums.converter;
 
 import java.util.stream.Stream;
+
+import com.example.helpdesk.model.enums.Status;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
-public class SeverityConverter implements AttributeConverter<Severity, String>  {
-    @Override
-    public String convertToDatabaseColumn(Severity attribute) {
+public class StatusConverter implements AttributeConverter<Status, String> {
+        @Override
+    public String convertToDatabaseColumn(Status attribute) {
         if(attribute == null) {
             return null;
         }
@@ -16,11 +18,11 @@ public class SeverityConverter implements AttributeConverter<Severity, String>  
     }
 
     @Override
-    public Severity convertToEntityAttribute(String dbData) {
+    public Status convertToEntityAttribute(String dbData) {
         if(dbData == null) {
             return null;
         }
-        return Stream.of(Severity.values())
+        return Stream.of(Status.values())
           .filter(c -> c.getValue().equals(dbData))
           .findFirst()
           .orElseThrow(IllegalArgumentException::new);
