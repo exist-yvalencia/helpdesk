@@ -22,7 +22,6 @@ public class EmployeeController {
     @GetMapping
     @PreAuthorize("permitAll()")
     public ResponseEntity<Employee> getEmployee(@RequestParam String id) {
-        System.out.println("ID: "+id);
         return employeeService.getEmployee(id);
     }
 

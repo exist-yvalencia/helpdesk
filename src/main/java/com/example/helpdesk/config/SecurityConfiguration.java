@@ -14,14 +14,18 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@EnableWebMvc
 @EnableWebSecurity
 @EnableMethodSecurity(
     prePostEnabled=true,
     proxyTargetClass = true
 )
-public class SecurityConfiguration {
+public class SecurityConfiguration implements WebMvcConfigurer{
     @Autowired
     private Environment env;
 
@@ -44,7 +48,10 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(request -> request.anyRequest().authenticated())
+            .authorizeHttpRequests(request -> 
+                request
+                    .requestMatchers("/","*.html", "*.js", "*.css", "/employee", "/ticket", "/login").permitAll()
+                    .anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults())
             .build();
     }
@@ -56,5 +63,12 @@ public class SecurityConfiguration {
         return encoder;
     }
     
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+        .allowedMethods("GET","POST","PATCH","PUT", "DELETE")
+        .allowedOrigins("*")
+        .allowedHeaders("*");
+    }
 }
 
