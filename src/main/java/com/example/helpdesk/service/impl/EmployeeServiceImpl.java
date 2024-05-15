@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.helpdesk.model.Employee;
-import com.example.helpdesk.model.enums.Status;
 import com.example.helpdesk.repository.EmployeeRepository;
 import com.example.helpdesk.repository.TicketRepository;
 import com.example.helpdesk.service.EmployeeService;
@@ -66,7 +65,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeRepository.findById(Integer.valueOf(employeeId)).get();
             ticketRepository.findById(Integer.valueOf(ticketNumber)).get();
 
-            ticketRepository.updateAssignee(Integer.parseInt(employeeId), Status.ASSIGNED.getValue(), Integer.parseInt(ticketNumber));
+            ticketRepository.updateAssignee(Integer.parseInt(employeeId),  Integer.parseInt(ticketNumber));
             return new ResponseEntity<>("Ticket assigned to employee successfully", HttpStatus.OK);
         } catch(NoSuchElementException e) {
             return new ResponseEntity<>("Employee/Ticket does not exist", HttpStatus.NOT_FOUND);
