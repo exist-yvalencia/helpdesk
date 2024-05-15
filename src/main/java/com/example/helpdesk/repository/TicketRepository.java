@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.helpdesk.model.Ticket;
+import com.example.helpdesk.model.enums.Status;
 
 import jakarta.transaction.Transactional;
 
@@ -18,6 +19,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE Ticket SET assignee = ?1 WHERE ticket_number = ?2", nativeQuery = true)
-    public void updateAssignee(int employeeId, int ticketNumber);
+    @Query(value = "UPDATE Ticket SET assignee = ?1, status = ?2 WHERE ticket_number = ?3", nativeQuery = true)
+    public void updateAssignee(int employeeId, String assigned , int ticketNumber);
 }

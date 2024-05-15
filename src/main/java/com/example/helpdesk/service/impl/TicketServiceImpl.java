@@ -54,7 +54,7 @@ public class TicketServiceImpl implements TicketService{
             ticketRepository.save(ticket);
             return new ResponseEntity<>("Ticket Created", HttpStatus.OK);
         } catch(Exception e) {
-            return new ResponseEntity<>("Ticket not created", HttpStatus.NOT_MODIFIED);
+            return new ResponseEntity<>("Ticket not created", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -63,11 +63,11 @@ public class TicketServiceImpl implements TicketService{
         try {
             Ticket foundTicket = ticketRepository.findById(ticket.getTicketNumber()).get();
 
-            if(ticket.getTitle() != null) {
+            if(ticket.getTitle() != null && !ticket.getTitle().isEmpty()) {
                 foundTicket.setTitle(ticket.getTitle());
             }
 
-            if(ticket.getDescription() != null) {
+            if(ticket.getDescription() != null && !ticket.getDescription().isEmpty()) {
                 foundTicket.setDescription(ticket.getDescription());
             }
 
