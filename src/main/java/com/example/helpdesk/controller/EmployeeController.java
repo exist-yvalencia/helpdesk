@@ -50,7 +50,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteEmployee(@RequestParam String id) {
         return employeeService.deleteEmployee(id);
     }

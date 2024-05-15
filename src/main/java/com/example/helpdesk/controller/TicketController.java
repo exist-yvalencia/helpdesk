@@ -38,7 +38,7 @@ public class TicketController {
     }
 
     @GetMapping("/by-assignee")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<Ticket>> getTicketListByAssignee(@RequestParam String employeeId) {
         return ticketService.getTicketListByAssignee(employeeId);
     }
