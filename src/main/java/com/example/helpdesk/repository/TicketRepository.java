@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.helpdesk.model.Ticket;
-import com.example.helpdesk.model.enums.Status;
 
 import jakarta.transaction.Transactional;
 
