@@ -15,4 +15,19 @@ public enum Severity {
     public String getValue() {
         return this.severity;
     }
+
+    public static Severity getSeverity(String value) {
+        switch (value) {
+            case "LOW":
+                return LOW;
+            case "NORMAL":
+                return NORMAL;
+            case "MAJOR":
+                return MAJOR;
+            case "CRITICAL":
+                return CRITICAL;
+            default:
+                return null;
+        }
+    }
 }
