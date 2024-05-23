@@ -4,11 +4,16 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.helpdesk.model.Ticket;
+import com.example.helpdesk.model.dto.TicketDTO;
+import com.example.helpdesk.model.enums.Severity;
+import com.example.helpdesk.model.enums.Status;
+import com.example.helpdesk.model.mapper.TicketMapper;
 import com.example.helpdesk.repository.TicketRepository;
 import com.example.helpdesk.service.TicketService;
 
@@ -16,40 +21,45 @@ import com.example.helpdesk.service.TicketService;
 public class TicketServiceImpl implements TicketService{
     @Autowired
     TicketRepository ticketRepository;
-
-    public TicketServiceImpl(TicketRepository ticketRepository) {
-        this.ticketRepository = ticketRepository;
-    }
+    @Autowired
+    TicketMapper ticketMapper;
 
     @Override
-    public ResponseEntity<Ticket> getTicket(String id) {
+    public ResponseEntity<TicketDTO> getTicket(String id) {
         try {
-            return new ResponseEntity<>(ticketRepository.findById(Integer.valueOf(id)).get(), HttpStatus.OK);
+            Ticket ticket = ticketRepository.findById(Integer.valueOf(id)).get();
+            TicketDTO ticketDTO = ticketMapper.ticketToTicketDTO(ticket);
+            return new ResponseEntity<>(ticketDTO, HttpStatus.OK);
         } catch(NoSuchElementException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
     @Override
-    public ResponseEntity<List<Ticket>> getTicketList() {
+    public ResponseEntity<List<TicketDTO>> getTicketList(Pageable pageable) {
         try{
-            return new ResponseEntity<>(ticketRepository.findAll(), HttpStatus.OK);
+            List<Ticket> ticketList = ticketRepository.findAll(pageable).getContent();
+            List<TicketDTO> ticketDTOs = ticketMapper.ticketListToDTOs(ticketList);
+            return new ResponseEntity<>(ticketDTOs, HttpStatus.OK);
         } catch(Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
     @Override
-    public ResponseEntity<List<Ticket>> getTicketListByAssignee(String employeeId){
+    public ResponseEntity<List<TicketDTO>> getTicketListByAssignee(String employeeId, Pageable pageable){
         try {
-            return new ResponseEntity<>(ticketRepository.getTicketListByAssignee(Integer.parseInt(employeeId)), HttpStatus.OK);
+            List<Ticket> ticketList = ticketRepository.findByAssigneeId(Integer.parseInt(employeeId), pageable);
+            List<TicketDTO> ticketDTOs = ticketMapper.ticketListToDTOs(ticketList);
+            return new ResponseEntity<>(ticketDTOs, HttpStatus.OK);
         } catch(Exception e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
     @Override
-    public ResponseEntity<String> createTicket(Ticket ticket) {
+    public ResponseEntity<String> createTicket(TicketDTO ticketDTO) {
+        Ticket ticket = ticketMapper.ticketDTOtoTicket(ticketDTO);
         try{
             ticketRepository.save(ticket);
             return new ResponseEntity<>("Ticket Created", HttpStatus.OK);
@@ -59,7 +69,8 @@ public class TicketServiceImpl implements TicketService{
     }
 
     @Override
-    public ResponseEntity<String> updateTicket(Ticket ticket) {
+    public ResponseEntity<String> updateTicket(TicketDTO ticketDTO) {
+        Ticket ticket = ticketMapper.ticketDTOtoTicket(ticketDTO);
         try {
             Ticket foundTicket = ticketRepository.findById(ticket.getTicketNumber()).get();
 
@@ -105,4 +116,23 @@ public class TicketServiceImpl implements TicketService{
         }
     }
     
+    @Override
+    public ResponseEntity<List<TicketDTO>> search(String text, Pageable pageable) {
+        int ticketNumber = 0;
+        try {
+            ticketNumber = Integer.parseInt(text);
+        } catch(Exception e) {
+            
+        }
+        List<Ticket> tickets = ticketRepository.findByTicketNumberOrTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrSeverityOrStatus(
+            ticketNumber, 
+            text, 
+            text, 
+            Severity.getSeverity(text.toUpperCase()), 
+            Status.geStatus(text.toUpperCase()), 
+            pageable);
+
+        List<TicketDTO> ticketDTOs = TicketMapper.INSTANCE.ticketListToDTOs(tickets);
+        return new ResponseEntity<>(ticketDTOs, HttpStatus.OK);
+    }
 }

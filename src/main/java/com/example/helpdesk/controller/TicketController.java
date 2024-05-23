@@ -2,6 +2,7 @@ package com.example.helpdesk.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.helpdesk.service.TicketService;
-import com.example.helpdesk.model.Ticket;
+import com.example.helpdesk.model.dto.TicketDTO;
 
 @RestController
 @RequestMapping("/ticket")
@@ -27,32 +28,32 @@ public class TicketController {
 
     @GetMapping
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Ticket> getTicket(@RequestParam String id) {
+    public ResponseEntity<TicketDTO> getTicket(@RequestParam String id) {
         return ticketService.getTicket(id);
     }
 
     @GetMapping("/all")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<List<Ticket>> getTicketList() {
-        return ticketService.getTicketList();
+    public ResponseEntity<List<TicketDTO>> getTicketList(Pageable pageable) {
+        return ticketService.getTicketList(pageable);
     }
 
     @GetMapping("/by-assignee")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<List<Ticket>> getTicketListByAssignee(@RequestParam String employeeId) {
-        return ticketService.getTicketListByAssignee(employeeId);
+    public ResponseEntity<List<TicketDTO>> getTicketListByAssignee(@RequestParam String employeeId, Pageable pageable) {
+        return ticketService.getTicketListByAssignee(employeeId, pageable);
     }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> createTicket(@RequestBody Ticket ticket) {
-        return ticketService.createTicket(ticket);
+    public ResponseEntity<String> createTicket(@RequestBody TicketDTO ticketDTO) {
+        return ticketService.createTicket(ticketDTO);
     }
 
     @PatchMapping("/update")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> updateTicket(@RequestBody Ticket ticket) {
-        return ticketService.updateTicket(ticket);
+    public ResponseEntity<String> updateTicket(@RequestBody TicketDTO ticketDTO) {
+        return ticketService.updateTicket(ticketDTO);
     }
 
     @DeleteMapping("/delete")
