@@ -20,4 +20,12 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer>{
         Department department,
         Pageable pageable
     );
+
+    public long countByEmployeeNumberContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrMiddleNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrDepartment(
+        String employeeNumber,
+        String firstName,
+        String middleName,
+        String lastName,
+        Department department
+    );
 }

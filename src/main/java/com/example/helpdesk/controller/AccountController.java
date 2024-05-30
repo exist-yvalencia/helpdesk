@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.helpdesk.model.dto.AccountDTO;
@@ -16,10 +17,10 @@ import com.example.helpdesk.service.AccountService;
 
 @RestController
 @RequestMapping("/account")
-public class LoginController {
+public class AccountController {
     private AccountService accountService;
 
-    public LoginController(AccountService accountService) {
+    public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
 
@@ -30,9 +31,22 @@ public class LoginController {
         return accountService.getRole(authentication.getName());
     }
 
+    @GetMapping("")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<AccountDTO> getByEmployeeId(@RequestParam String employeeId) {
+        return accountService.findByEmployeeId(employeeId);
+    }
+
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> create(@RequestBody AccountDTO dto) {
         return accountService.create(dto);
     }
+
+    @PostMapping("/update")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> update(@RequestBody AccountDTO dto) {
+        return accountService.update(dto);
+    }
+
 }

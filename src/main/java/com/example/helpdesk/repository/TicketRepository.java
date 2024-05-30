@@ -27,6 +27,14 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
         Pageable pageable
     );
 
+    public long countByTicketNumberOrTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrSeverityOrStatus(
+        int ticketNumber,
+        String title,
+        String description,
+        Severity severity,
+        Status status
+    );
+
     @Modifying
     @Transactional
     @Query(value = "UPDATE Ticket SET assignee = ?1 WHERE ticket_number = ?2", nativeQuery = true)

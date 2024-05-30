@@ -8,4 +8,6 @@ import com.example.helpdesk.model.enums.Role;
 public interface AccountService {
     public ResponseEntity<String> create(AccountDTO dto);
     public ResponseEntity<Role> getRole(String username);
+    public ResponseEntity<AccountDTO> findByEmployeeId(String employeeId);
+    public ResponseEntity<String> update(AccountDTO dto);
 }
