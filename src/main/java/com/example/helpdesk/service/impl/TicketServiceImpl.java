@@ -58,6 +58,12 @@ public class TicketServiceImpl implements TicketService{
     }
 
     @Override
+    public ResponseEntity<Long> getListSize() {
+        long size = ticketRepository.count();
+        return new ResponseEntity<>(Long.valueOf(size), HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<String> createTicket(TicketDTO ticketDTO) {
         Ticket ticket = ticketMapper.ticketDTOtoTicket(ticketDTO);
         try{
@@ -115,17 +121,21 @@ public class TicketServiceImpl implements TicketService{
             return new ResponseEntity<>("Ticket does not exist", HttpStatus.NOT_FOUND);
         }
     }
-    
-    @Override
-    public ResponseEntity<List<TicketDTO>> search(String text, Pageable pageable) {
-        int ticketNumber = 0;
+
+    private int textToTicketNumber(String text) {
+        int ticketNumber;
         try {
             ticketNumber = Integer.parseInt(text);
         } catch(Exception e) {
-            
+            ticketNumber = 0;
         }
+        return ticketNumber;
+    }
+    
+    @Override
+    public ResponseEntity<List<TicketDTO>> search(String text, Pageable pageable) {
         List<Ticket> tickets = ticketRepository.findByTicketNumberOrTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrSeverityOrStatus(
-            ticketNumber, 
+            textToTicketNumber(text), 
             text, 
             text, 
             Severity.getSeverity(text.toUpperCase()), 
@@ -134,5 +144,12 @@ public class TicketServiceImpl implements TicketService{
 
         List<TicketDTO> ticketDTOs = TicketMapper.INSTANCE.ticketListToDTOs(tickets);
         return new ResponseEntity<>(ticketDTOs, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Long> getSearchSize(String text) {
+        Long size = ticketRepository.countByTicketNumberOrTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrSeverityOrStatus(
+            textToTicketNumber(text), text, text, Severity.getSeverity(text.toUpperCase()), Status.geStatus(text.toUpperCase()));
+        return new ResponseEntity<>(size, HttpStatus.OK);
     }
 }

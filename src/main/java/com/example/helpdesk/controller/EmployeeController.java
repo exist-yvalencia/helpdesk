@@ -32,9 +32,15 @@ public class EmployeeController {
         return employeeService.getEmployeeList(pageable);
     }
 
+    @GetMapping("/all/size")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Long> getListSize() {
+        return employeeService.getListSize();
+    }
+
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> createEmployee(@RequestBody EmployeeDTO employeeDTO) {
+    public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody EmployeeDTO employeeDTO) {
         return employeeService.createEmployee(employeeDTO);
     }
 
@@ -60,5 +66,11 @@ public class EmployeeController {
     @PreAuthorize("permitAll()")
     public ResponseEntity<List<EmployeeDTO>> search(@RequestParam String text, Pageable pageable){
         return employeeService.search(text, pageable);
+    }
+
+    @GetMapping("/search/size")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Long> getSearchSize(@RequestParam String text){
+        return employeeService.getSearchSize(text);
     }
 }

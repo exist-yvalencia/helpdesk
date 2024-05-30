@@ -13,6 +13,7 @@ import com.example.helpdesk.model.Employee;
 import com.example.helpdesk.model.dto.EmployeeDTO;
 import com.example.helpdesk.model.enums.Department;
 import com.example.helpdesk.model.mapper.EmployeeMapper;
+import com.example.helpdesk.repository.AccountRepository;
 import com.example.helpdesk.repository.EmployeeRepository;
 import com.example.helpdesk.repository.TicketRepository;
 import com.example.helpdesk.repository.TicketWatcherRepository;
@@ -24,6 +25,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     EmployeeRepository employeeRepository;
     @Autowired
     TicketRepository ticketRepository;
+    @Autowired
+    AccountRepository accountRepository;
     @Autowired
     TicketWatcherRepository ticketWatcherRepository;
 
@@ -50,14 +53,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public ResponseEntity<String> createEmployee(EmployeeDTO employeeDTO) {
+    public ResponseEntity<Long> getListSize() {
+        Long size = employeeRepository.count();
+        return new ResponseEntity<>(size, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<EmployeeDTO> createEmployee(EmployeeDTO employeeDTO) {
         Employee employee = EmployeeMapper.INSTANCE.employeeDTOtoEmployee(employeeDTO);
 
         if(employeeRepository.findByEmployeeNumber(employee.getEmployeeNumber()) == null) {
-            employeeRepository.save(employee);
-            return new ResponseEntity<>("Employee saved", HttpStatus.OK);
+            Employee savedEmployee = employeeRepository.saveAndFlush(employee);
+            employeeDTO = EmployeeMapper.INSTANCE.employeeToEmployeeDTO(savedEmployee);
+            return new ResponseEntity<>(employeeDTO, HttpStatus.OK);
         }else {
-            return new ResponseEntity<>("Employee already exists", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -119,6 +129,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 throw new Exception("Deletion failed. Employee has ticket/s assigned to them.");
             }
             ticketWatcherRepository.deleteByEmployeeId(employee);
+            accountRepository.deleteByEmployeeId(employee);
             employeeRepository.deleteById(Integer.valueOf(id));
             return new ResponseEntity<>("Employee deleted", HttpStatus.OK);
         } catch(NoSuchElementException e) {
@@ -135,5 +146,12 @@ public class EmployeeServiceImpl implements EmployeeService {
             text, text, text, text, Department.getDepartment(text.toUpperCase()), pageable);
         List<EmployeeDTO> employeeDTOs = EmployeeMapper.INSTANCE.employeeListToDTOs(employees);
         return new ResponseEntity<>(employeeDTOs, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Long> getSearchSize(String text) {
+        Long size = employeeRepository.countByEmployeeNumberContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrMiddleNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrDepartment(
+            text, text, text, text, Department.getDepartment(text.toUpperCase()));
+        return new ResponseEntity<>(size, HttpStatus.OK);
     }
 }

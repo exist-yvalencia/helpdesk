@@ -11,8 +11,10 @@ public interface TicketService {
     public ResponseEntity<TicketDTO> getTicket(String id);
     public ResponseEntity<List<TicketDTO>> getTicketList(Pageable pageable);
     public ResponseEntity<List<TicketDTO>> getTicketListByAssignee(String employeeId, Pageable pageable);
+    public ResponseEntity<Long> getListSize();
     public ResponseEntity<String> createTicket(TicketDTO ticketDTO);
     public ResponseEntity<String> updateTicket(TicketDTO ticketDTO);
     public ResponseEntity<String> deleteTicket(String id);
     public ResponseEntity<List<TicketDTO>> search(String text, Pageable pageable);
+    public ResponseEntity<Long> getSearchSize(String text);
 }

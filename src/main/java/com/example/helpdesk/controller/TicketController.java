@@ -38,6 +38,12 @@ public class TicketController {
         return ticketService.getTicketList(pageable);
     }
 
+    @GetMapping("/all/size")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Long> getListSize() {
+        return ticketService.getListSize();
+    }
+
     @GetMapping("/by-assignee")
     @PreAuthorize("permitAll()")
     public ResponseEntity<List<TicketDTO>> getTicketListByAssignee(@RequestParam String employeeId, Pageable pageable) {
@@ -60,5 +66,17 @@ public class TicketController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteTicket(@RequestParam String id) {
         return ticketService.deleteTicket(id);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<List<TicketDTO>> search(@RequestParam String text, Pageable pageable){
+        return ticketService.search(text, pageable);
+    }
+
+    @GetMapping("/search/size")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Long> getSearchSize(@RequestParam String text){
+        return ticketService.getSearchSize(text);
     }
 }
